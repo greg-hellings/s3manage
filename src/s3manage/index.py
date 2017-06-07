@@ -1,8 +1,22 @@
+# -*- coding: UTF-8 -*-
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import posixpath as webpath
+import six
 
 from munch import munchify
+from builtins import str
+
+HTML_BASE = """<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        {0}
+    </body>
+</html>"""
 
 
 class Index(object):
@@ -50,6 +64,15 @@ class Node(object):
         self.virtual = False
         self.is_dir = self._item.key.endswith('/')
         self.parts = self._item.key.split('/')
+
+    def __str__(self):
+        if six.PY2:
+            return self.__unicode__().encode('utf-8')
+        else:
+            return self.__unicode__()
+
+    def __unicode__(self):
+        return '📃 <a href="{0}">{0}</a>'.format(self.parts[-1])
 
     def add_child(self, node, depth=0):
         """
@@ -130,6 +153,15 @@ class DirNode(Node):
         self.is_dir = True
         self.parts = self.parts[:-1]
 
+    def __str__(self):
+        if six.PY2:
+            return self.__unicode__().encode('utf-8')
+        else:
+            return self.__unicode__()
+
+    def __unicode__(self):
+        return '📁 <a href="{0}">{0}</a>'.format(self.parts[-1])
+
     def get_index_file(self):
         links = ['<a href="..">&lt;Parent&gt;</a>']
         self.get_index_file_links(links)
@@ -138,14 +170,13 @@ class DirNode(Node):
     def add_links_to_body(self, links):
         # Construct the full file
         link_strs = '<br />\n        '.join(links)
-        body = '    <body>\n        {0}\n    </body>'.format(link_strs)
-        f = '<!DOCTYPE html>\n<html>\n{0}\n</html>'.format(body)
+        f = HTML_BASE.format(link_strs)
         return f
 
     def get_index_file_links(self, links):
         # Create each link for child elements
         for child in sorted(self._children.keys()):
-            links.append('<a href="{0}">{0}</a>'.format(child))
+            links.append(str(self._children[child]))
 
     def print_tree(self, indent=0):
         super(DirNode, self).print_tree(indent)

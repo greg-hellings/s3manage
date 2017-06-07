@@ -24,7 +24,7 @@ def read(*names, **kwargs):
 
 setup(
     name='s3manage',
-    version='0.1.0',
+    version='0.2.0',
     license='BSD',
     description='Utilities to help manage S3 buckets',
     long_description='%s\n%s' % (
@@ -65,7 +65,9 @@ setup(
     install_requires=[
         'boto3',
         'aws-shell',
-        'munch'
+        'munch',
+        'six',
+        'future'
     ],
     extras_require={
         # eg:

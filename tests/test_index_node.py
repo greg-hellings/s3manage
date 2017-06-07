@@ -1,5 +1,9 @@
+# -*- coding: UTF-8 -*-
+from __future__ import unicode_literals
+
 import mock
 import pytest
+import six
 from munch import munchify
 
 from s3manage.index import DirNode
@@ -8,6 +12,7 @@ from s3manage.index import NodeError
 from s3manage.index import RootNode
 from s3manage.index import VirtualNode
 from s3manage.index import node_factory
+from s3manage.index import HTML_BASE
 
 
 def test_root_node_only():
@@ -22,6 +27,7 @@ def test_dir_node_only():
     assert node.is_dir
     assert len(node.parts) == 1
     assert node.get_index_file() == DIR_NODE_ONLY_INDEX
+    str(node)
 
 def test_first_level_children(capsys):
     node = RootNode()
@@ -47,6 +53,7 @@ def test_first_level_children(capsys):
                   Body=bytearray(FIRST_LEVEL_CHILDREN_L2_INDEX, 'utf-8'),
                   Key='asdf/index.html')
     dest.put_object.assert_has_calls([first, second])
+    str(node._children['derp.txt'])
 
 def test_basic_node():
     node = Node(munchify({'key': 'asdf/derp.txt'}))
@@ -72,35 +79,15 @@ def test_non_virtual_node_complains():
     with pytest.raises(NodeError) as e_info:
         node.set_node(node)
 
-ROOT_NODE_ONLY_INDEX="""<!DOCTYPE html>
-<html>
-    <body>
-        
-    </body>
-</html>"""
+ROOT_NODE_ONLY_INDEX=HTML_BASE.format("")
 
-DIR_NODE_ONLY_INDEX="""<!DOCTYPE html>
-<html>
-    <body>
-        <a href="..">&lt;Parent&gt;</a>
-    </body>
-</html>"""
+DIR_NODE_ONLY_INDEX=HTML_BASE.format('<a href="..">&lt;Parent&gt;</a>')
 
-FIRST_LEVEL_CHILDREN_INDEX="""<!DOCTYPE html>
-<html>
-    <body>
-        <a href="asdf">asdf</a><br />
-        <a href="derp.txt">derp.txt</a>
-    </body>
-</html>"""
+FIRST_LEVEL_CHILDREN_INDEX=HTML_BASE.format("""📁 <a href="asdf">asdf</a><br />
+        📃 <a href="derp.txt">derp.txt</a>""")
 
-FIRST_LEVEL_CHILDREN_L2_INDEX="""<!DOCTYPE html>
-<html>
-    <body>
-        <a href="..">&lt;Parent&gt;</a><br />
-        <a href="herp.dat">herp.dat</a>
-    </body>
-</html>"""
+FIRST_LEVEL_CHILDREN_L2_INDEX=HTML_BASE.format("""<a href="..">&lt;Parent&gt;</a><br />
+        📃 <a href="herp.dat">herp.dat</a>""")
 
 FIRST_LEVEL_CHILDREN_TREE="""|--- 
 |   |--- asdf/

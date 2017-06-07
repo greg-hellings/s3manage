@@ -1,7 +1,11 @@
+# -*- coding: UTF-8 -*-
+from __future__ import unicode_literals
+
 import mock
 from munch import munchify as m
 
 from s3manage.index import Index
+from s3manage.index import HTML_BASE
 
 test_data = [mock.Mock(**{'key': 'test.txt'}),
              mock.Mock(**{'key': 'help.dat'}),
@@ -35,29 +39,14 @@ def test_create_index():
     mock_bucket.put_object.assert_has_calls([c1, c2, c3])
 
 
-FIRST_LEVEL="""<!DOCTYPE html>
-<html>
-    <body>
-        <a href="firstdir">firstdir</a><br />
-        <a href="help.dat">help.dat</a><br />
-        <a href="notadir">notadir</a><br />
-        <a href="seconddir">seconddir</a><br />
-        <a href="test.txt">test.txt</a>
-    </body>
-</html>"""
+FIRST_LEVEL=HTML_BASE.format("""📁 <a href="firstdir">firstdir</a><br />
+        📃 <a href="help.dat">help.dat</a><br />
+        📃 <a href="notadir">notadir</a><br />
+        📁 <a href="seconddir">seconddir</a><br />
+        📃 <a href="test.txt">test.txt</a>""")
 
-SECOND_LEVEL="""<!DOCTYPE html>
-<html>
-    <body>
-        <a href="..">&lt;Parent&gt;</a><br />
-        <a href="firstfile.txt">firstfile.txt</a><br />
-        <a href="nope.exe">nope.exe</a>
-    </body>
-</html>"""
+SECOND_LEVEL=HTML_BASE.format("""<a href="..">&lt;Parent&gt;</a><br />
+        📃 <a href="firstfile.txt">firstfile.txt</a><br />
+        📃 <a href="nope.exe">nope.exe</a>""")
 
-SECOND_LEVEL_2="""<!DOCTYPE html>
-<html>
-    <body>
-        <a href="..">&lt;Parent&gt;</a>
-    </body>
-</html>"""
+SECOND_LEVEL_2=HTML_BASE.format('<a href="..">&lt;Parent&gt;</a>')
