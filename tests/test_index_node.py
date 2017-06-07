@@ -6,13 +6,13 @@ import pytest
 import six
 from munch import munchify
 
+from s3manage.index import HTML_BASE
 from s3manage.index import DirNode
 from s3manage.index import Node
 from s3manage.index import NodeError
 from s3manage.index import RootNode
 from s3manage.index import VirtualNode
 from s3manage.index import node_factory
-from s3manage.index import HTML_BASE
 
 
 def test_root_node_only():

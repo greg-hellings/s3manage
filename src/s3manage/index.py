@@ -3,10 +3,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import posixpath as webpath
-import six
-
-from munch import munchify
 from builtins import str
+
+import six
+from munch import munchify
+
 
 HTML_BASE = """<!DOCTYPE html>
 <html>

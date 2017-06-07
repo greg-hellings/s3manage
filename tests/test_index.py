@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 import mock
 from munch import munchify as m
 
-from s3manage.index import Index
 from s3manage.index import HTML_BASE
+from s3manage.index import Index
 
 test_data = [mock.Mock(**{'key': 'test.txt'}),
              mock.Mock(**{'key': 'help.dat'}),
