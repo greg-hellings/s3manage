@@ -2,10 +2,10 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import humanfriendly
 import posixpath as webpath
 from builtins import str
 
+import humanfriendly
 import six
 from munch import munchify
 
