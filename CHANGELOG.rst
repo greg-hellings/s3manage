@@ -2,6 +2,13 @@
 Changelog
 =========
 
+0.3.0 (2017-06-08)
+------------------
+
+* Added "size" and "last_modified" fields to output
+* Changed output to a table
+* Stylized output for easier reading and comprehension
+
 0.2.0 (2017-06-07)
 ------------------
 

@@ -7,13 +7,13 @@ from munch import munchify as m
 from s3manage.index import HTML_BASE
 from s3manage.index import Index
 
-test_data = [mock.Mock(**{'key': 'test.txt'}),
-             mock.Mock(**{'key': 'help.dat'}),
-             mock.Mock(**{'key': 'firstdir/'}),
-             mock.Mock(**{'key': 'firstdir/firstfile.txt'}),
-             mock.Mock(**{'key': 'firstdir/nope.exe'}),
-             mock.Mock(**{'key': 'seconddir/'}),
-             mock.Mock(**{'key': 'notadir'})]
+test_data = [mock.Mock(**{'key': 'test.txt', 'last_modified': '2011-01-01', 'size': 100000000}),
+             mock.Mock(**{'key': 'help.dat', 'last_modified': '2011-01-01', 'size': 100000000}),
+             mock.Mock(**{'key': 'firstdir/', 'last_modified': '2011-01-01', 'size': 0}),
+             mock.Mock(**{'key': 'firstdir/firstfile.txt', 'last_modified': '2011-01-01', 'size': 100000000}),
+             mock.Mock(**{'key': 'firstdir/nope.exe', 'last_modified': '2011-01-01', 'size': 100000000}),
+             mock.Mock(**{'key': 'seconddir/', 'last_modified': '2011-01-01', 'size': 0}),
+             mock.Mock(**{'key': 'notadir', 'last_modified': '2011-01-01', 'size': 100000000})]
 
 
 def test_create_index():
@@ -39,14 +39,14 @@ def test_create_index():
     mock_bucket.put_object.assert_has_calls([c1, c2, c3])
 
 
-FIRST_LEVEL=HTML_BASE.format("""📁 <a href="firstdir">firstdir</a><br />
-        📃 <a href="help.dat">help.dat</a><br />
-        📃 <a href="notadir">notadir</a><br />
-        📁 <a href="seconddir">seconddir</a><br />
-        📃 <a href="test.txt">test.txt</a>""")
+FIRST_LEVEL=HTML_BASE.format("""<tr><td>📁</td><td><a href="firstdir">firstdir</a></td><td>2011-01-01</td><td> - </td></tr>
+<tr><td>📃</td><td><a href="help.dat">help.dat</a></td><td>2011-01-01</td><td>100 MB</td></tr>
+<tr><td>📃</td><td><a href="notadir">notadir</a></td><td>2011-01-01</td><td>100 MB</td></tr>
+<tr><td>📁</td><td><a href="seconddir">seconddir</a></td><td>2011-01-01</td><td> - </td></tr>
+<tr><td>📃</td><td><a href="test.txt">test.txt</a></td><td>2011-01-01</td><td>100 MB</td></tr>""")
 
-SECOND_LEVEL=HTML_BASE.format("""<a href="..">&lt;Parent&gt;</a><br />
-        📃 <a href="firstfile.txt">firstfile.txt</a><br />
-        📃 <a href="nope.exe">nope.exe</a>""")
+SECOND_LEVEL=HTML_BASE.format("""<tr><td></td> <td><a href="..">&lt;Parent&gt;</a></td><td></td><td></td></tr>
+<tr><td>📃</td><td><a href="firstfile.txt">firstfile.txt</a></td><td>2011-01-01</td><td>100 MB</td></tr>
+<tr><td>📃</td><td><a href="nope.exe">nope.exe</a></td><td>2011-01-01</td><td>100 MB</td></tr>""")
 
-SECOND_LEVEL_2=HTML_BASE.format('<a href="..">&lt;Parent&gt;</a>')
+SECOND_LEVEL_2=HTML_BASE.format('<tr><td></td> <td><a href="..">&lt;Parent&gt;</a></td><td></td><td></td></tr>')

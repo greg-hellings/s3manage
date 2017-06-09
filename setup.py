@@ -67,7 +67,8 @@ setup(
         'aws-shell',
         'munch',
         'six',
-        'future'
+        'future',
+        'humanfriendly'
     ],
     extras_require={
         # eg:

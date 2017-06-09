@@ -23,7 +23,7 @@ def test_root_node_only():
     assert node.get_part(7) is None
 
 def test_dir_node_only():
-    node = DirNode(munchify({'key': 'asdf/'}))
+    node = DirNode(munchify({'key': 'asdf/', 'size': 0, 'last_modified': '2022-01-77'}))
     assert node.is_dir
     assert len(node.parts) == 1
     assert node.get_index_file() == DIR_NODE_ONLY_INDEX
@@ -31,9 +31,9 @@ def test_dir_node_only():
 
 def test_first_level_children(capsys):
     node = RootNode()
-    node.add_child(Node(munchify({'key': 'derp.txt'})))
-    node.add_child(Node(munchify({'key': 'asdf/herp.dat'})))
-    node.add_child(DirNode(munchify({'key': 'asdf/'})))
+    node.add_child(Node(munchify({'key': 'derp.txt', 'size': 177, 'last_modified': '2017-01-01'})))
+    node.add_child(Node(munchify({'key': 'asdf/herp.dat', 'size': 10000, 'last_modified': '2016-01-02'})))
+    node.add_child(DirNode(munchify({'key': 'asdf/', 'size': 0, 'last_modified': '2016-01-03'})))
     assert node.is_dir
     assert len(node._children) == 2
     assert not node._children['derp.txt'].is_dir
@@ -81,13 +81,13 @@ def test_non_virtual_node_complains():
 
 ROOT_NODE_ONLY_INDEX=HTML_BASE.format("")
 
-DIR_NODE_ONLY_INDEX=HTML_BASE.format('<a href="..">&lt;Parent&gt;</a>')
+DIR_NODE_ONLY_INDEX=HTML_BASE.format('<tr><td></td> <td><a href="..">&lt;Parent&gt;</a></td><td></td><td></td></tr>')
 
-FIRST_LEVEL_CHILDREN_INDEX=HTML_BASE.format("""📁 <a href="asdf">asdf</a><br />
-        📃 <a href="derp.txt">derp.txt</a>""")
+FIRST_LEVEL_CHILDREN_INDEX=HTML_BASE.format("""<tr><td>📁</td><td><a href="asdf">asdf</a></td><td>2016-01-03</td><td> - </td></tr>
+<tr><td>📃</td><td><a href="derp.txt">derp.txt</a></td><td>2017-01-01</td><td>177 bytes</td></tr>""")
 
-FIRST_LEVEL_CHILDREN_L2_INDEX=HTML_BASE.format("""<a href="..">&lt;Parent&gt;</a><br />
-        📃 <a href="herp.dat">herp.dat</a>""")
+FIRST_LEVEL_CHILDREN_L2_INDEX=HTML_BASE.format("""<tr><td></td> <td><a href="..">&lt;Parent&gt;</a></td><td></td><td></td></tr>
+<tr><td>📃</td><td><a href="herp.dat">herp.dat</a></td><td>2016-01-02</td><td>10 KB</td></tr>""")
 
 FIRST_LEVEL_CHILDREN_TREE="""|--- 
 |   |--- asdf/
