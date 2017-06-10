@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import posixpath as webpath
 from builtins import str
 
+import humanfriendly
 import six
 from munch import munchify
 
@@ -13,9 +14,42 @@ HTML_BASE = """<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
+        <style type="text/css">
+            thead {{
+                text-align: center;
+                font-weight: bold;
+                font-size: 125%;
+            }}
+            thead th {{
+                padding-bottom: 10px;
+            }}
+            tbody {{
+                border-top: solid 1px #aaa;
+                border-bottom: solid 1px #aaa;
+            }}
+            tbody td {{
+                padding-right: 5px;
+            }}
+            tbody tr:hover {{
+                background-color: #ddd;
+                border: 1px solid #aaa;
+            }}
+        </style>
     </head>
     <body>
-        {0}
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Last Modified</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody>
+{0}
+            </tbody>
+        </table>
     </body>
 </html>"""
 
@@ -65,6 +99,7 @@ class Node(object):
         self.virtual = False
         self.is_dir = self._item.key.endswith('/')
         self.parts = self._item.key.split('/')
+        self.icon = '📃'
 
     def __str__(self):
         if six.PY2:
@@ -73,7 +108,13 @@ class Node(object):
             return self.__unicode__()
 
     def __unicode__(self):
-        return '📃 <a href="{0}">{0}</a>'.format(self.parts[-1])
+        rep = '<tr><td>{0}</td>'.format(self.icon)
+        rep += '<td><a href="{0}">{0}</a></td>'.format(self.parts[-1])
+        rep += '<td>{0}</td>'.format(self._item.last_modified)
+        size = humanfriendly.format_size(self._item.size) if self._item.size > 0 else ' - '
+        rep += '<td>{0}</td>'.format(size)
+        rep += '</tr>'
+        return rep
 
     def add_child(self, node, depth=0):
         """
@@ -153,6 +194,7 @@ class DirNode(Node):
         super(DirNode, self).__init__(item)
         self.is_dir = True
         self.parts = self.parts[:-1]
+        self.icon = '📁'
 
     def __str__(self):
         if six.PY2:
@@ -160,17 +202,14 @@ class DirNode(Node):
         else:
             return self.__unicode__()
 
-    def __unicode__(self):
-        return '📁 <a href="{0}">{0}</a>'.format(self.parts[-1])
-
     def get_index_file(self):
-        links = ['<a href="..">&lt;Parent&gt;</a>']
+        links = ['<tr><td></td> <td><a href="..">&lt;Parent&gt;</a></td><td></td><td></td></tr>']
         self.get_index_file_links(links)
         return self.add_links_to_body(links)
 
     def add_links_to_body(self, links):
         # Construct the full file
-        link_strs = '<br />\n        '.join(links)
+        link_strs = '\n'.join(links)
         f = HTML_BASE.format(link_strs)
         return f
 
