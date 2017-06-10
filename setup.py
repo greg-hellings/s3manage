@@ -24,7 +24,7 @@ def read(*names, **kwargs):
 
 setup(
     name='s3manage',
-    version='0.2.0',
+    version='0.3.0',
     license='BSD',
     description='Utilities to help manage S3 buckets',
     long_description='%s\n%s' % (
